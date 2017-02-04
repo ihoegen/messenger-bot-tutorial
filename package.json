@@ -1,16 +1,24 @@
 {
-  "name": "secretbots",
+  "name": "realestatebot",
   "version": "1.0.0",
-  "description": "",
+  "description": "![Alt text](/demo/Demo.gif)",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Ian Arlo Hoegen <ianhoegen@gmail.com> (https://github.com/ihoegen)",
   "license": "ISC",
   "dependencies": {
-    "body-parser": "^1.15.0",
-    "express": "^4.13.4",
-    "request": "^2.71.0"
-  }
+    "body-parser": "^1.16.0",
+    "express": "^4.14.1",
+    "request": "^2.79.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ihoegen/messenger-bot-tutorial.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ihoegen/messenger-bot-tutorial/issues"
+  },
+  "homepage": "https://github.com/ihoegen/messenger-bot-tutorial#readme"
 }

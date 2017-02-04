@@ -2,7 +2,7 @@
 /*
 Please report any bugs to nicomwaks@gmail.com
 
-i have added console.log on line 48 
+i have added console.log on line 48
 
 
 
@@ -45,7 +45,7 @@ app.post('/webhook/', function (req, res) {
 		let sender = event.sender.id
 		if (event.message && event.message.text) {
 			let text = event.message.text
-			if (text === 'Generic'){ 
+			if (text === 'Generic'){
 				console.log("welcome to chatbot")
 				//sendGenericMessage(sender)
 				continue
@@ -68,7 +68,7 @@ const token = "<FB_PAGE_ACCESS_TOKEN>"
 
 function sendTextMessage(sender, text) {
 	let messageData = { text:text }
-	
+
 	request({
 		url: 'https://graph.facebook.com/v2.6/me/messages',
 		qs: {access_token:token},
