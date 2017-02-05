@@ -44,9 +44,9 @@ app.post('/webhook/', function (req, res) {
 		let event = req.body.entry[0].messaging[i]
 		let sender = event.sender.id
 		if (event.message && event.message.text) {
-			let text = event.message.text
-			if (text === 'Get Started'){
-				// sendGenericMessage(sender)
+			let text = event.message.text || '';
+			if (text.toLowerCase() === 'get started'){
+				getStarted(sender)
 				continue
 			}
 			sendTextMessage(sender, "Text received, echo: " + text.substring(0, 200))
@@ -135,40 +135,31 @@ function sendGenericMessage(sender) {
 }
 
 function getStarted() {
-	let messageData = {
-		"attachment": {
-			"type": "template",
-			"payload": {
-				"template_type": "getStarted",
-				"elements": [{
-					"buttons": [ {
-						"type": "postback",
-						"title": "Sell A Home",
-						"payload": "search",
-					},
-					{
-						"type": "postback",
-						"title": "Search for Homes",
-						"payload": "search",
-					},
-					{
-						"type": "postback",
-						"title": "Search for Homes",
-						"payload": "search",
-					},],
-				}, {
-					"title": "Second card",
-					"subtitle": "Element #2 of an hscroll",
-					"image_url": "http://messengerdemo.parseapp.com/img/gearvr.png",
-					"buttons": [{
-						"type": "postback",
-						"title": "Postback",
-						"payload": "Payload for second element in a generic bubble",
-					}],
-				}]
-			}
-		}
-	}
+	let message = {
+    		attachment: {
+      		type: "template",
+       			payload: {
+        			template_type: "button",
+      				text: "Welcome to Real Estate Bot. What would you like to do?",
+        			buttons:[{
+								type: "postback",
+            		title: "Sell a Home",
+            		payload: "USER_DEFINED_PAYLOAD"
+          		},
+          		{
+          			type: "postback",
+            		title: "Find a Home",
+            		payload: "USER_DEFINED_PAYLOAD"
+          		},
+							{
+								type: "postback",
+								title: "Buy a Home",
+								payload: "USER_DEFINED_PAYLOAD"
+							}
+							]
+      			}
+    			}
+  			}
 	request({
 		url: 'https://graph.facebook.com/v2.6/me/messages',
 		qs: {access_token:token},
