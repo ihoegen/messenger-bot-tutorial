@@ -1,19 +1,14 @@
-//This is still work in progress
-/*
-Please report any bugs to nicomwaks@gmail.com
-
-i have added console.log on line 48
-
-
-
-
- */
 'use strict'
 
-const express = require('express')
-const bodyParser = require('body-parser')
-const request = require('request')
-const app = express()
+const express = require('express');
+const bodyParser = require('body-parser');
+const request = require('request');
+const app = express();
+const token = "EAADB3ttHzLMBAGfjo1tbVFTjWjynytD1w6YdQeFB4xVSkaQmlqBVxxzGIbOgusEtZA9y8mlyVAgLkxZCEEZCcQtSp2PcdAZB5Ks5pydy3oNAXHlSFJDaAdKITQA5RvQ8am7IpU6jc7OkLbod2qOi3zUkmHjwbI1ZCNPohuwufzwZDZD"
+const Responses = require('./src/Responses.js');
+const WordTools = require('./src/WordTools.js');
+var contextStore = {};
+var searchStore = {};
 
 app.set('port', (process.env.PORT || 5000))
 
@@ -43,140 +38,106 @@ app.post('/webhook/', function (req, res) {
 	for (let i = 0; i < messaging_events.length; i++) {
 		let event = req.body.entry[0].messaging[i]
 		let sender = event.sender.id
+		if (!contextStore[sender]) searchStore[sender] = {};
 		if (event.message && event.message.text) {
 			let text = event.message.text || '';
-			if (text.toLowerCase() === 'get started'){
-				getStarted(sender)
-				continue
+			let chosenClue = WordTools.searchKeywords(text);
+			let zipCode = WordTools.findZip(text);
+			let searchParams = WordTools.getSearchParams(text);
+			if (!contextStore[sender]&& searchParams) {
+				searchStore[sender].beds = searchParams.beds;
+				searchStore[sender].baths = searchParams.baths;
 			}
-			sendTextMessage(sender, "Text received, echo: " + text.substring(0, 200))
+			if (contextStore[sender] == 'describe') {
+				contextStore[sender] = null;
+				if (searchParams) {
+					searchStore[sender].beds = searchParams.beds;
+					searchStore[sender].baths = searchParams.baths;
+				}
+				Responses.sendTextMessage(sender, JSON.stringify(searchStore), token);
+				continue;
+			}
+			switch (chosenClue) {
+				case 'find':
+				case 'search':
+				case 'buy':
+				case 'purchase':
+					contextStore[sender] = 'buy';
+					searchStore[sender].type = 'buy';
+					if (zipCode) {
+						searchStore[sender].zip = zipCode;
+						if (searchStore[sender].beds || searchStore[sender].baths) {
+							contextStore[sender] = null;
+							Responses.sendTextMessage(sender, JSON.stringify(searchStore), token);
+						} else {
+							Responses.buyParams(sender, token);
+						}
+					} else {
+						Responses.noZipGiven('buy', sender, token);
+					}
+					break;
+				case 'sell':
+					contextStore[sender] = 'sell';
+					searchStore[sender].type = 'sell';
+					Responses.sendTextMessage(sender, "You want to sell a home", token);
+					break;
+				default:
+				if (searchStore[sender].type == 'buy' && zipCode) {
+					searchStore[sender].zip = zipCode;
+					if (searchStore[sender].beds || searchStore[sender].baths) {
+						contextStore[sender] = null;
+						Responses.sendTextMessage(sender, JSON.stringify(searchStore), token);
+					} else {
+						contextStore[sender] = 'describe';
+						Responses.buyParams(sender, token);
+					}
+				} else {
+					Responses.getStarted(sender, token);
+				}
+				continue;
+			}
 		}
 		if (event.postback) {
-			let text = JSON.stringify(event.postback)
-			sendTextMessage(sender, "Postback received: "+text.substring(0, 200), token)
+			let text = JSON.stringify(event.postback.payload)
+			let searchParams = WordTools.getSearchParams(text);
+			if (!searchStore) searchStore[sender] = {};
+			if (!contextStore[sender] && searchParams) {
+				searchStore[sender].beds = searchParams.beds;
+				searchStore[sender].baths = searchParams.baths;
+			}
+			text = text.replace(/"/g, '');
+			let splitPostback = text.split(',');
+			let postbackType = splitPostback[0];
+			switch (postbackType) {
+				case "ZIP_CODE":
+					searchStore[sender].zip = splitPostback[1];
+					if (searchStore[sender].beds || searchStore[sender].baths) {
+						contextStore[sender] = null;
+						Responses.sendTextMessage(sender, JSON.stringify(searchStore), token);
+					} else {
+						contextStore[sender] = 'describe';
+						Responses.buyParams(sender, token);
+					}
+					break;
+				case "ACTION_PAYLOAD":
+					contextStore[sender] = 'sell';
+					let triggerType = splitPostback[1];
+					if (triggerType != 'sell') {
+						contextStore[sender] = triggerType;
+						searchStore[sender].type = triggerType;
+						Responses.noZipGiven(triggerType, sender, token);
+					} else {
+						Responses.sendTextMessage(sender, "You want to sell a home", token);
+					}
+					break;
+				default:
+				Responses.sendTextMessage(sender, text, token)
+			}
 			continue
 		}
 	}
 	res.sendStatus(200)
 })
-
-
-// recommended to inject access tokens as environmental variables, e.g.
-// const token = process.env.FB_PAGE_ACCESS_TOKEN
-const token = "EAADB3ttHzLMBAGfjo1tbVFTjWjynytD1w6YdQeFB4xVSkaQmlqBVxxzGIbOgusEtZA9y8mlyVAgLkxZCEEZCcQtSp2PcdAZB5Ks5pydy3oNAXHlSFJDaAdKITQA5RvQ8am7IpU6jc7OkLbod2qOi3zUkmHjwbI1ZCNPohuwufzwZDZD"
-
-function sendTextMessage(sender, text) {
-	let messageData = { text:text }
-
-	request({
-		url: 'https://graph.facebook.com/v2.6/me/messages',
-		qs: {access_token:token},
-		method: 'POST',
-		json: {
-			recipient: {id:sender},
-			message: messageData,
-		}
-	}, function(error, response, body) {
-		if (error) {
-			console.log('Error sending messages: ', error)
-		} else if (response.body.error) {
-			console.log('Error: ', response.body.error)
-		}
-	})
-}
-
-function sendGenericMessage(sender) {
-	let messageData = {
-		"attachment": {
-			"type": "template",
-			"payload": {
-				"template_type": "generic",
-				"elements": [{
-					"title": "First card",
-					"subtitle": "Element #1 of an hscroll",
-					"image_url": "http://messengerdemo.parseapp.com/img/rift.png",
-					"buttons": [{
-						"type": "web_url",
-						"url": "https://www.messenger.com",
-						"title": "web url"
-					}, {
-						"type": "postback",
-						"title": "Postback",
-						"payload": "Payload for first element in a generic bubble",
-					}],
-				}, {
-					"title": "Second card",
-					"subtitle": "Element #2 of an hscroll",
-					"image_url": "http://messengerdemo.parseapp.com/img/gearvr.png",
-					"buttons": [{
-						"type": "postback",
-						"title": "Postback",
-						"payload": "Payload for second element in a generic bubble",
-					}],
-				}]
-			}
-		}
-	}
-	request({
-		url: 'https://graph.facebook.com/v2.6/me/messages',
-		qs: {access_token:token},
-		method: 'POST',
-		json: {
-			recipient: {id:sender},
-			message: messageData,
-		}
-	}, function(error, response, body) {
-		if (error) {
-			console.log('Error sending messages: ', error)
-		} else if (response.body.error) {
-			console.log('Error: ', response.body.error)
-		}
-	})
-}
-
-function getStarted() {
-	let message = {
-    		attachment: {
-      		type: "template",
-       			payload: {
-        			template_type: "button",
-      				text: "Welcome to Real Estate Bot. What would you like to do?",
-        			buttons:[{
-								type: "postback",
-            		title: "Sell a Home",
-            		payload: "USER_DEFINED_PAYLOAD"
-          		},
-          		{
-          			type: "postback",
-            		title: "Find a Home",
-            		payload: "USER_DEFINED_PAYLOAD"
-          		},
-							{
-								type: "postback",
-								title: "Buy a Home",
-								payload: "USER_DEFINED_PAYLOAD"
-							}
-							]
-      			}
-    			}
-  			}
-	request({
-		url: 'https://graph.facebook.com/v2.6/me/messages',
-		qs: {access_token:token},
-		method: 'POST',
-		json: {
-			recipient: {id:sender},
-			message: messageData,
-		}
-	}, function(error, response, body) {
-		if (error) {
-			console.log('Error sending messages: ', error)
-		} else if (response.body.error) {
-			console.log('Error: ', response.body.error)
-		}
-	})
-}
-
 // spin spin sugar
 app.listen(app.get('port'), function() {
 	console.log('running on port', app.get('port'))
