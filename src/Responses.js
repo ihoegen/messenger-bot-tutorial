@@ -80,13 +80,13 @@ function sendResults(searchData, link, token, sender) {
       payload: {
         template_type: "list",
         elements: []
+        buttons: [{
+          title: "View More",
+          type: "web_url",
+          url: link
+        }]
       }
     },
-    buttons: [{
-       title: "View More",
-       type: "web_url",
-       url: link
-   }]
   }
   for (let i = 0; i < 4; i++) {
     let currentSearchItem = searchData[i]
