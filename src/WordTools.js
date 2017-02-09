@@ -57,6 +57,7 @@ function guessPrice(text) {
 		if (tokenized[i] == 'for') {
 			console.log(tokenized);
 			console.log(i);
+			console.log(i+1);
 			console.log(tokenized[i+1]);
 			if (!isNaN(tokenized[i+1])) {
 				return tokenized[i+1];
