@@ -94,10 +94,7 @@ function getListings(searchParams, callback) {
     url: defaultLink,
     method: 'GET',
   }, function(error, response, body) {
-    console.log(error);
-    console.log(response);
-    console.log(body);
-    callback(Scrape(body));
+    callback(JSON.stringify(Scrape(body)));
   });
 }
 
