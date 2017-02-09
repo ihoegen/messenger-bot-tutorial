@@ -13,7 +13,10 @@ function scrapeText(file) {
     finalResults[i].price = priceArray[i].replace(/\D/g, '');
     finalResults[i].link = 'http://www.realtor.com'  + photoArray[i].match(/"[^"]+"|(\+)/g)[2].replace('"', '');
     finalResults[i].address = photoArray[i].match(/"[^"]+"|(\+)/g)[3].replace('"', '');
-    finalResults[i].photo = photoArray[i].match(/"[^"]+"|(\+)/g)[7].replace('"', '');;
+    finalResults[i].photo = photoArray[i].match(/"[^"]+"|(\+)/g)[7];
+    if (finalResults[i].photo) {
+      finalResults[i].photo = finalResults[i].photo.replace('"', '');
+    }
   }
   return finalResults;
 }
