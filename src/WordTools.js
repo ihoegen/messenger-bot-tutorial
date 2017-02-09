@@ -41,8 +41,30 @@ function getSearchParams(text) {
 	return null;
 }
 
+function findPrice(text) {
+	let tokenized = text.toLowerCase().split(' ');
+	for (let i in tokenized) {
+		if (tokenized[i][0] == '$') {
+			return tokenized[i];
+		}
+	}
+	return null;
+}
+
+function guessPrice(text) {
+	let tokenized = text.toLowerCase().split(' ');
+	for (let i in tokenized) {
+		if (tokenized[i] == 'for') {
+			return tokenized[i+1];
+		}
+	}
+	return null;
+}
+
 module.exports = {
   searchKeywords: searchKeywords,
   findZip: findZip,
-	getSearchParams: getSearchParams
+	getSearchParams: getSearchParams,
+	findPrice: findPrice,
+	guessPrice: guessPrice
 }

@@ -44,15 +44,22 @@ app.post('/webhook/', function (req, res) {
 			let chosenClue = WordTools.searchKeywords(text);
 			let zipCode = WordTools.findZip(text);
 			let searchParams = WordTools.getSearchParams(text);
+			let price = WordTools.findPrice(text) || WordTools.guessPrice(text);
 			if (!contextStore[sender]&& searchParams) {
 				searchStore[sender].beds = searchParams.beds;
 				searchStore[sender].baths = searchParams.baths;
+			}
+			if (!contextStore[sender] && price) {
+				searchStore[sender].price = price;
 			}
 			if (contextStore[sender] == 'describe') {
 				contextStore[sender] = null;
 				if (searchParams) {
 					searchStore[sender].beds = searchParams.beds;
 					searchStore[sender].baths = searchParams.baths;
+				}
+				if (price) {
+					searchStore[sender].price = price;
 				}
 				Responses.sendTextMessage(sender, JSON.stringify(searchStore), token);
 				continue;
