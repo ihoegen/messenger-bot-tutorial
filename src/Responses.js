@@ -73,7 +73,7 @@ function noZipGiven(trigger, sender, token) {
     sendRequest(token, sender, messageData);
 }
 
-function sendResults(searchData, link) {
+function sendResults(searchData, link, token) {
   let messageData = {
     attachment: {
       type: "template",
@@ -108,7 +108,7 @@ function sendTextMessage(sender, text, token) {
   sendRequest(token, sender, messageData);
 }
 
-function getListings(searchParams) {
+function getListings(searchParams, token) {
   let defaultLink = "http://www.realtor.com/realestateandhomes-search/";
   defaultLink += searchParams.zip;
   if (searchParams.beds) {
@@ -125,7 +125,7 @@ function getListings(searchParams) {
     url: defaultLink,
     method: 'GET',
   }, function(error, response, body) {
-    sendResults(Scrape(body), defaultLink);
+    sendResults(Scrape(body), defaultLink, token);
   });
 }
 
