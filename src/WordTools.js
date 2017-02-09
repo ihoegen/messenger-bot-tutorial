@@ -64,6 +64,8 @@ function guessPrice(text) {
 	for (let i in tokenized) {
 		if (tokenized[i] == 'for' || tokenized[i] == 'under') {
 			let iMore = parseInt(i) +1;
+			console.log(tokenized);
+			console.log(iMore);
 			console.log(tokenized[iMore-1]);
 			console.log(tokenized[iMore]);
 			let current = tokenized[iMore].replace('k', '000').replace(',', '');
