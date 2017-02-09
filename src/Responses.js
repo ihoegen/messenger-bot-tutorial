@@ -77,6 +77,21 @@ function sendTextMessage(sender, text, token) {
   sendRequest(token, sender, messageData);
 }
 
+function getListings(searchParams) {
+  let defaultLink = "http://www.realtor.com/realestateandhomes-search/";
+  defaultLink += searchParams.zip;
+  if (searchParams.beds) {
+    defaultLink+='beds-'+searchParams.beds
+  }
+  if (searchParams.baths) {
+    defaultLink+='baths-'+searchParams.beds
+  }
+  if (searchParams.price) {
+    defaultLink+='price-na-'+searchParams.price
+  }
+  return defaultLink;
+}
+
 function buyParams(sender, token) {
     sendTextMessage(sender, "Describe what you're looking for", token);
 }

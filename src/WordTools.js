@@ -45,7 +45,15 @@ function findPrice(text) {
 	let tokenized = text.toLowerCase().split(' ');
 	for (let i in tokenized) {
 		if (tokenized[i][0] == '$') {
-			return tokenized[i];
+			let returnString = tokenized[i].replace('k', '000');
+			returnString = tokenized[i].replace(',', '');
+			return returnString.substring(1);
+		} else if (tokenized[i][tokenized[i].length -1] == 'k') {
+				if (!isNaN(tokenized[i][tokenized[i].length - 2]) && !isNaN(tokenized[i][tokenized[i].length - 3])) {
+					let guessString = tokenized[i].replace('k', '000');
+					guessString = tokenized[i].replace(',', '');
+					return guessString;
+				}
 		}
 	}
 	return null;
@@ -54,7 +62,7 @@ function findPrice(text) {
 function guessPrice(text) {
 	let tokenized = text.toLowerCase().split(' ');
 	for (let i in tokenized) {
-		if (tokenized[i] == 'for') {
+		if (tokenized[i] == 'for' || tokenized[i] == 'under') {
 			let iMore = parseInt(i) +1;
 			if (!isNaN(tokenized[iMore])) {
 				return tokenized[iMore];
