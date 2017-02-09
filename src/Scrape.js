@@ -13,8 +13,9 @@ function scrapeText(file) {
     finalResults[i].price = priceArray[i].replace(/\D/g, '');
     finalResults[i].address = photoArray[i].match(/"[^"]+"|(\+)/g)[3];
     finalResults[i].photo = photoArray[i].match(/"[^"]+"|(\+)/g)[7];
-
   }
+  return finalResults;
 }
+
 
 module.exports = scrapeText;
