@@ -79,7 +79,7 @@ function sendResults(searchData, link, token, sender) {
       type: "template",
       payload: {
         template_type: "list",
-        elements: []
+        elements: [],
         buttons: [{
           title: "View More",
           type: "web_url",
