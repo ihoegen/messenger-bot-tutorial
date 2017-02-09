@@ -72,12 +72,43 @@ function noZipGiven(trigger, sender, token) {
   	}
     sendRequest(token, sender, messageData);
 }
+
+function sendResults(searchData, link) {
+  let messageData = {
+    attachment: {
+      type: "template",
+      payload: {
+        template_type: "list",
+        elements: []
+      }
+    },
+    buttons: [{
+       title: "View More",
+       type: "web_url",
+       url: link
+   }]
+  }
+  for (let i = 0; i < 4; i++) {
+    let currentSearchItem = searchData[i]
+    messageData.attachment.payload.elements.push({
+      title: currentSearchItem.address,
+      image_url: currentSearchItem.photo,
+      subtitle: "$"+currentSearchItem.price+ ', ' + currentSearchItem.beds + ' beds, ' + currentSearchItem.baths + ' baths',
+      default_action: {
+          type: "web_url",
+          url: currentSearchItem.link,
+      }
+    });
+  }
+    sendRequest(token, sender, messageData);
+}
 function sendTextMessage(sender, text, token) {
-	let messageData = { text:text }
+  let textString = JSON.stringify(text).substring(0,200);
+	let messageData = { text:textString }
   sendRequest(token, sender, messageData);
 }
 
-function getListings(searchParams, callback) {
+function getListings(searchParams) {
   let defaultLink = "http://www.realtor.com/realestateandhomes-search/";
   defaultLink += searchParams.zip;
   if (searchParams.beds) {
@@ -94,7 +125,7 @@ function getListings(searchParams, callback) {
     url: defaultLink,
     method: 'GET',
   }, function(error, response, body) {
-    callback(Scrape(body));
+    sendResults(Scrape(body), defaultLink);
   });
 }
 
