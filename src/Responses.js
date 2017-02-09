@@ -100,5 +100,6 @@ module.exports = {
   getStarted: getStarted,
   sendTextMessage: sendTextMessage,
   noZipGiven: noZipGiven,
-  buyParams: buyParams
+  buyParams: buyParams,
+  getListings: getListings
 };
