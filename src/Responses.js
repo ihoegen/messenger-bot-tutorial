@@ -81,13 +81,13 @@ function getListings(searchParams) {
   let defaultLink = "http://www.realtor.com/realestateandhomes-search/";
   defaultLink += searchParams.zip;
   if (searchParams.beds) {
-    defaultLink+='beds-'+searchParams.beds
+    defaultLink+='/beds-'+searchParams.beds
   }
   if (searchParams.baths) {
-    defaultLink+='baths-'+searchParams.beds
+    defaultLink+='/baths-'+searchParams.beds
   }
   if (searchParams.price) {
-    defaultLink+='price-na-'+searchParams.price
+    defaultLink+='/price-na-'+searchParams.price
   }
   return defaultLink;
 }
