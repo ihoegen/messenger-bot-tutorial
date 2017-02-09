@@ -55,7 +55,8 @@ function guessPrice(text) {
 	let tokenized = text.toLowerCase().split(' ');
 	for (let i in tokenized) {
 		if (tokenized[i] == 'for') {
-			console.log(tokenized[i]);
+			console.log(tokenized);
+			console.log(i);
 			console.log(tokenized[i+1]);
 			if (!isNaN(tokenized[i+1])) {
 				return tokenized[i+1];
