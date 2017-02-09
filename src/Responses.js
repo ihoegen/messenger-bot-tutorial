@@ -1,7 +1,7 @@
 'use strict'
 
 const request = require('request');
-
+const Scrape = require('./Scrape.js');
 function sendRequest(token, sender, messageData) {
   request({
     url: 'https://graph.facebook.com/v2.6/me/messages',
@@ -77,19 +77,25 @@ function sendTextMessage(sender, text, token) {
   sendRequest(token, sender, messageData);
 }
 
-function getListings(searchParams) {
+function getListings(searchParams, callback) {
   let defaultLink = "http://www.realtor.com/realestateandhomes-search/";
   defaultLink += searchParams.zip;
   if (searchParams.beds) {
-    defaultLink+='/beds-'+searchParams.beds
+    defaultLink+='/beds-'+searchParams.beds;
   }
   if (searchParams.baths) {
-    defaultLink+='/baths-'+searchParams.beds
+    defaultLink+='/baths-'+searchParams.beds;
   }
   if (searchParams.price) {
-    defaultLink+='/price-na-'+searchParams.price
+    defaultLink+='/price-na-'+searchParams.price;
   }
-  return defaultLink;
+  defaultLink+='/sby-2';
+  request({
+    url: defaultLink,
+    method: 'GET',
+  }, function(error, response, body) {
+    callback(Scrape(body));
+  });
 }
 
 function buyParams(sender, token) {
