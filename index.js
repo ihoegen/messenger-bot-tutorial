@@ -62,7 +62,7 @@ app.post('/webhook/', function (req, res) {
 					searchStore[sender].price = price;
 				}
 				Responses.getListings(searchStore[sender], (data) => {
-					Responses.sendTextMessage(sender, data, token);
+					Responses.sendTextMessage(sender, JSON.stringify(data).substring(0,200), token);
 				});
 				continue;
 			}
@@ -78,7 +78,7 @@ app.post('/webhook/', function (req, res) {
 						if (searchStore[sender].beds || searchStore[sender].baths) {
 							contextStore[sender] = null;
 							Responses.getListings(searchStore[sender], (data) => {
-								Responses.sendTextMessage(sender, data, token);
+								Responses.sendTextMessage(sender, JSON.stringify(data).substring(0,200), token);
 							});
 						} else {
 							Responses.buyParams(sender, token);
@@ -98,7 +98,7 @@ app.post('/webhook/', function (req, res) {
 					if (searchStore[sender].beds || searchStore[sender].baths) {
 						contextStore[sender] = null;
 						Responses.getListings(searchStore[sender], (data) => {
-							Responses.sendTextMessage(sender, data, token);
+							Responses.sendTextMessage(sender, JSON.stringify(data).substring(0,200), token);
 						});
 					} else {
 						contextStore[sender] = 'describe';
@@ -127,7 +127,7 @@ app.post('/webhook/', function (req, res) {
 					if (searchStore[sender].beds || searchStore[sender].baths) {
 						contextStore[sender] = null;
 						Responses.getListings(searchStore[sender], (data) => {
-							Responses.sendTextMessage(sender, data, token);
+							Responses.sendTextMessage(sender, JSON.stringify(data).substring(0,200), token);
 						});
 					} else {
 						contextStore[sender] = 'describe';
