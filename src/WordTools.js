@@ -64,9 +64,10 @@ function guessPrice(text) {
 	for (let i in tokenized) {
 		if (tokenized[i] == 'for' || tokenized[i] == 'under') {
 			let iMore = parseInt(i) +1;
-			if (!isNaN(tokenized[iMore])) {
-				return tokenized[iMore].replace('k', '000').replace(',', '');;
-			} else if (tokenized[iMore] == 'under') {
+			let current = tokenized[iMore].replace('k', '000').replace(',', '');
+			if (!isNaN(current)) {
+				return current;
+			} else if (current == 'under') {
 				return tokenized[iMore+1].replace('k', '000').replace(',', '');
 			}
 		}
