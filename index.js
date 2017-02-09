@@ -61,7 +61,7 @@ app.post('/webhook/', function (req, res) {
 				if (price) {
 					searchStore[sender].price = price;
 				}
-				Responses.getListings(searchStore[sender], token);
+				Responses.getListings(searchStore[sender], token, sender);
 				continue;
 			}
 			switch (chosenClue) {
@@ -75,7 +75,7 @@ app.post('/webhook/', function (req, res) {
 						searchStore[sender].zip = zipCode;
 						if (searchStore[sender].beds || searchStore[sender].baths) {
 							contextStore[sender] = null;
-							Responses.getListings(searchStore[sender], token);
+							Responses.getListings(searchStore[sender], token, sender);
 						} else {
 							Responses.buyParams(sender, token);
 						}
@@ -93,7 +93,7 @@ app.post('/webhook/', function (req, res) {
 					searchStore[sender].zip = zipCode;
 					if (searchStore[sender].beds || searchStore[sender].baths) {
 						contextStore[sender] = null;
-						Responses.getListings(searchStore[sender], token);
+						Responses.getListings(searchStore[sender], token, sender);
 					} else {
 						contextStore[sender] = 'describe';
 						Responses.buyParams(sender, token);
@@ -120,7 +120,7 @@ app.post('/webhook/', function (req, res) {
 					searchStore[sender].zip = splitPostback[1];
 					if (searchStore[sender].beds || searchStore[sender].baths) {
 						contextStore[sender] = null;
-						Responses.getListings(searchStore[sender], token);
+						Responses.getListings(searchStore[sender], token, sender);
 					} else {
 						contextStore[sender] = 'describe';
 						Responses.buyParams(sender, token);
